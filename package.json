@@ -1,0 +1,25 @@
+{
+  "name": "comradbot",
+  "version": "4.2.0",
+  "description": "For the glory of motherland",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "keywords": [
+    "cyka",
+    "blyat"
+  ],
+  "author": "Putin",
+  "license": "ISC",
+  "dependencies": {
+    "@types/node": "^10.3.0",
+    "discord.js": "^11.3.2",
+    "dotenv": "^5.0.1",
+    "ffmpeg": "0.0.4",
+    "ffmpeg-binaries": "^3.2.2-3",
+    "opusscript": "0.0.6",
+    "typescript": "^2.9.1"
+  }
+}

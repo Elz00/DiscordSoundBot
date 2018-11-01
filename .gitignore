@@ -1,0 +1,5 @@
+.env
+/soundsMP3
+/node_modules
+*.js
+*.js.map
