@@ -33,7 +33,7 @@ client.on('message', message => {
     ////////////////////////////////////////
     // MESSAGE UNIQUE TO SPECIFIC PEOPLE ///
 
-    if(message.author.username == "OrignalQc"){
+    /*if(message.author.username == "OrignalQc"){
         if(checkIfForbidden(message)){
             var member = message.member
             // Kick
@@ -46,7 +46,8 @@ client.on('message', message => {
             });
         }
 
-    }
+    }*/
+
     
     ////////////////////////////////////////
     // SOUNDS RELATED COMMANDS /////////////
@@ -67,4 +68,4 @@ function checkIfForbidden(message:Discord.Message):boolean{
 }
 
 // Log our bot in
-client.login(process.env.TOKEN);
+client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XOBiBw.s0EOMqQF63dHpr-ZQCukn0QzeBw");

@@ -31,11 +31,13 @@ export class SoundManager {
     // PLAY OR STOP SOUNDS ///////////////
 
     checkForSoundRelatedMessage(message:Discord.Message){
-        if(this.fredFilesName.indexOf(message.content.toUpperCase()) != -1){
+        console.log(this.fredFilesName);
+        if(this.fredFilesName.indexOf(message.content.toUpperCase()) !== -1){
             this.playSounds(message);
+            console.log("test");
         }
 
-        if(message.content.toUpperCase().indexOf("REDUCE AUTISM") == 0){
+        if(message.content.toUpperCase().indexOf("REDUCE AUTISM") === 0){
             this.deleteSound(message);
         }
 
@@ -87,6 +89,7 @@ export class SoundManager {
         }*/
 
         if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
+            console.log("isInChannel");
             let channel = message.member.voiceChannel;
     
             if(channel != null && this.channelPlaying.indexOf(channel.id) == -1){
@@ -166,7 +169,7 @@ export class SoundManager {
             }
 
             this.fredFilesMp3.splice(this.fredFilesMp3.indexOf(sound), 1);
-            this.fredFilesName.splice(this.fredFilesName.indexOf(element), 1);
+            this.fredFilesName.splice(this.fredFilesName.indexOf(element.toUpperCase()), 1);
         });
     }
 
@@ -174,9 +177,10 @@ export class SoundManager {
     // HELP COMMANDS /////////////////////
 
     helpCommand(message:Discord.Message){
-        var commands:string = ""
-        this.fredFilesMp3.forEach(file => {
-            commands+= "- " + file + "\n"
+        var commands:string = "";
+        var names = this.fredFilesName.sort((one, two) => (one > two ? 1 : -1));
+        names.forEach(file => {
+            commands += "- " + file + "\n"
         })
         message.channel.send("```Here is a list of all the sounds I can make:\n" + commands + "```");
     }
