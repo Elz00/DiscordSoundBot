@@ -2,17 +2,18 @@
 import Discord = require("discord.js");
 import Quote from "./Quote";
 import { formatAsCodeBlock } from "../Utils/Format";
-
+const fs = require('fs');
+const readline = require('readline');
 
 
 const _ = require("lodash");
 
 class QuoteManager {
 
-    quotes:Quote[];
+    quotes:Quote[] = [];
 
     constructor() {
-        this.quotes = [];
+        this.readAllQuotesFromTextFile();
     }
 
     checkForQuoteRelatedMessage = (message:Discord.Message) => {
@@ -69,7 +70,12 @@ class QuoteManager {
                 return quote += " " + quotePart;
             })
 
-            this.quotes.push(new Quote(quoteName, quote, quoteId));
+            let newQuote:Quote = new Quote(quoteName, quote, quoteId);
+
+            this.addToDataBase(newQuote).then(() => {
+                this.quotes.push(newQuote);
+            })
+            
         }
     }
 
@@ -111,13 +117,27 @@ class QuoteManager {
 
             let quoteMessage = "";
 
-            specificQuotes.forEach((q:Quote) => {
-                quoteMessage += q.getQuoteWithDateAsString() + "\n";
-            })
+            if (messageAsArray[2] != undefined) {
+                if(messageAsArray[2].toUpperCase() === "!ID") {
+                    specificQuotes.forEach((q:Quote) => {
+                        quoteMessage += q.getQuoteWithDateAsString() + " - Id: " + q.id +"\n";
+                    })
+                } else {
+                    specificQuotes.forEach((q:Quote) => {
+                        quoteMessage += q.getQuoteWithDateAsString() + "\n";
+                    })
+                }
+            } else {
+                specificQuotes.forEach((q:Quote) => {
+                    quoteMessage += q.getQuoteWithDateAsString() + "\n";
+                })
+            }
 
-            if(quoteMessage !== "")
+            
+
+            if (quoteMessage !== "")
                 message.channel.send(formatAsCodeBlock(quoteMessage));
-        }
+        } 
     }
 
     printHelpMessage = (message:Discord.Message) => {
@@ -130,9 +150,36 @@ class QuoteManager {
 !QuoteAll <name>: Prints all the quote of someone or everyone if no name is specified
     Name: Add a name if you want all the quotes from a single person
 !RandomQuote: Prints a random quote
-!QuoteEvolution <name>: Prints all the of someone in chronological order`
+!QuoteEvolution <name> [!ID]: Prints all the of someone in chronological order
+    Name: name of the person
+    !ID: If !ID if written after the name, the id of the quotes will be showed
+         usefull if you have forgotten the id of a Quote`
+        
 
         message.channel.send(formatAsCodeBlock(helpMessage));
+    }
+
+    //////////////////////////////////////
+    // DATABASE UTILS ////////////////////
+
+    readAllQuotesFromTextFile = async ():Promise<void> => {
+        await fs.readFile("./DataBase/quotes.txt", "utf8", (errors:any, data:string) => {
+            data.split("\n").forEach((qAsString:string) => {
+                let qData:string[] = qAsString.split(";");
+                this.quotes.push(new Quote(qData[0], qData[1], qData[2], new Date(qData[3])))
+            })
+        })
+    }
+
+
+    // How the fuck do I return True 
+    addToDataBase = async (q:Quote):Promise<boolean> => {
+        console.log(q.date);
+        let data:string = "\n" + q.name + ";" + q.quote + ";" + q.id + ";" + q.date.toISOString();
+        return fs.appendFile("./DataBase/quotes.txt", data, "utf8", (err:any) => {
+            if(err !== null)
+                console.log("Errors While adding a new Quote : " + err);
+        })
     }
 }
 
