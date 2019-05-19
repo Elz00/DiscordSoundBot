@@ -5,6 +5,7 @@ import Discord = require("discord.js");
 
 // Import the SoundManager
 import { SoundManager } from './SoundPlayer/SoundManager';
+import QuoteManager from "./QuoteManager/QuoteManager";
 
 require('dotenv').config();
 
@@ -27,32 +28,11 @@ var forbiddenWords = ["POUVOIR", "ABUS", "LIBERTÉ", "DICTATURE"];
 var dontleave = false;
 
 var soundManager:SoundManager = new SoundManager(users);
+var quoteManager:QuoteManager = new QuoteManager();
 
 client.on('message', message => {
-
-    ////////////////////////////////////////
-    // MESSAGE UNIQUE TO SPECIFIC PEOPLE ///
-
-    /*if(message.author.username == "OrignalQc"){
-        if(checkIfForbidden(message)){
-            var member = message.member
-            // Kick
-            member.kick().then((member) => {
-                // Successmessage
-                message.channel.send("Bye Justin");
-            }).catch(() => {
-                // Failmessage
-                message.channel.send("Ca marche pas criss d'incompetent.");
-            });
-        }
-
-    }*/
-
-    
-    ////////////////////////////////////////
-    // SOUNDS RELATED COMMANDS /////////////
-
     soundManager.checkForSoundRelatedMessage(message);
+    quoteManager.checkForQuoteRelatedMessage(message);
 });
 
 
@@ -68,4 +48,5 @@ function checkIfForbidden(message:Discord.Message):boolean{
 }
 
 // Log our bot in
-client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XOBiBw.s0EOMqQF63dHpr-ZQCukn0QzeBw");
+//client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XOBiBw.s0EOMqQF63dHpr-ZQCukn0QzeBw");
+client.login("NDQ3ODM5NjkwOTcyNzI1MjY4.XOCQzQ.MzDTpCRbjTn8BhnlNvvQ4-Uf61Y");

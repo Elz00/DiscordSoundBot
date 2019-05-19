@@ -30,11 +30,9 @@ export class SoundManager {
     //////////////////////////////////////
     // PLAY OR STOP SOUNDS ///////////////
 
-    checkForSoundRelatedMessage(message:Discord.Message){
-        console.log(this.fredFilesName);
+    checkForSoundRelatedMessage = (message:Discord.Message) => {
         if(this.fredFilesName.indexOf(message.content.toUpperCase()) !== -1){
             this.playSounds(message);
-            console.log("test");
         }
 
         if(message.content.toUpperCase().indexOf("REDUCE AUTISM") === 0){
@@ -60,33 +58,7 @@ export class SoundManager {
         }
     }
 
-    playSounds(message:Discord.Message){
-        
-        /*let verif = true;
-
-        for(var i = 0; i < this.users.length; i++){
-            if(this.users[i][0] == message.author.id){
-                verif = false;
-            }
-        }
-
-        this.users.push([message.author.id, 3]);
-
-        if(verif){
-           
-        setInterval(() => {
-            if(users.length != 0){
-                for(var i = 0; i < users.length; i++){
-                    if(users[i][1] == 0){
-                        users.splice(i);
-                    } else {
-                        users[i][1]--;
-                    }
-                }
-            }
-        }, 1000)
-
-        }*/
+    playSounds = (message:Discord.Message) => {
 
         if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
             console.log("isInChannel");
@@ -121,7 +93,7 @@ export class SoundManager {
         }
     }
 
-    stopPlayingSound(message:Discord.Message){
+    stopPlayingSound = (message:Discord.Message) => {
         if(message.member.voiceChannel != null && this.channelPlaying.indexOf(message.member.voiceChannel.id) != -1){
             message.member.voiceChannel.leave();
         }
@@ -130,7 +102,7 @@ export class SoundManager {
     //////////////////////////////////////
     // ADD OR DELETE SOUNDS //////////////
 
-    addSound(message:Discord.Message){
+    addSound = (message:Discord.Message) => {
         // Make sure at least 1 attachments
         if(message.attachments.size != 0){
             
@@ -150,7 +122,7 @@ export class SoundManager {
         }
     }
 
-    deleteSound(message:Discord.Message){
+    deleteSound = (message:Discord.Message) => {
         var toDelete:String[] = message.content.split(" ");
         toDelete.splice(0, 2);
         var path = "";
@@ -176,7 +148,7 @@ export class SoundManager {
     //////////////////////////////////////
     // HELP COMMANDS /////////////////////
 
-    helpCommand(message:Discord.Message){
+    helpCommand = (message:Discord.Message) => {
         var commands:string = "";
         var names = this.fredFilesName.sort((one, two) => (one > two ? 1 : -1));
         names.forEach(file => {
@@ -188,7 +160,7 @@ export class SoundManager {
     //////////////////////////////////////
     // UTILITY ///////////////////////////
 
-    isInChannel(message:Discord.Message){
+    isInChannel = (message:Discord.Message) => {
         if(message.member.voiceChannel){
             return true;
         } else {
