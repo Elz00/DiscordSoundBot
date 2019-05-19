@@ -117,7 +117,7 @@ class QuoteManager {
 
             let quoteMessage = "";
 
-            if (messageAsArray[2] != undefined) {
+            if (messageAsArray.length >= 3) {
                 if(messageAsArray[2].toUpperCase() === "!ID") {
                     specificQuotes.forEach((q:Quote) => {
                         quoteMessage += q.getQuoteWithDateAsString() + " - Id: " + q.id +"\n";

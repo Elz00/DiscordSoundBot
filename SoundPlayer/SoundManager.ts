@@ -61,7 +61,6 @@ export class SoundManager {
     playSounds = (message:Discord.Message) => {
 
         if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
-            console.log("isInChannel");
             let channel = message.member.voiceChannel;
     
             if(channel != null && this.channelPlaying.indexOf(channel.id) == -1){
