@@ -1,5 +1,5 @@
 // Import the discord.js module
-import Discord = require("discord.js");
+import * as Discord from "discord.js"
 import Https = require("https");
 
 import { Sound } from './Sound';
@@ -60,10 +60,10 @@ export class SoundManager {
 
     playSounds = (message:Discord.Message) => {
         if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
-            let channel:Discord.VoiceChannel = message.member.voiceChannel;
+            let channel:Discord.VoiceChannel = message.member.voice.channel;
             if(channel != null && this.channelPlaying.indexOf(channel.id) == -1){
                 console.log("channel found: " + channel.name)
-                channel.join().then(connection => {
+                channel.join().then((connection:Discord.VoiceConnection) => {
                     console.log("is in channel")
                     this.channelPlaying.push(channel.id);
 
@@ -75,9 +75,9 @@ export class SoundManager {
                         }
                     });
                     
-                    let dispatcher:Discord.StreamDispatcher = connection.playFile(sound.path.toString());
+                    let dispatcher:Discord.StreamDispatcher = connection.play(sound.path.toString());
         
-                    dispatcher.on("end", end => {
+                    dispatcher.on("finish", () => {
                         setTimeout(() => {
                             channel.leave();
                         }, 1000);
@@ -94,8 +94,8 @@ export class SoundManager {
     }
 
     stopPlayingSound = (message:Discord.Message) => {
-        if(message.member.voiceChannel != null && this.channelPlaying.indexOf(message.member.voiceChannel.id) != -1){
-            message.member.voiceChannel.leave();
+        if(message.member.voice.channel != null && this.channelPlaying.indexOf(message.member.voice.channel.id) != -1){
+            message.member.voice.channel.leave();
         }
     }
 
@@ -107,16 +107,16 @@ export class SoundManager {
         if(message.attachments.size != 0){
             
             //foreach attachment, fetch data from discord and store it
-            message.attachments.forEach((file) => {
-                if(file.filename.endsWith(".mp3") || file.filename.endsWith(".MP3")){
-                    var fileUpload = fs.createWriteStream("./soundsMP3/" + file.filename.toUpperCase().substring(0, file.filename.length - 4) + ".mp3");
+            message.attachments.forEach((file:Discord.MessageAttachment) => {
+                if(file.name.endsWith(".mp3") || file.name.endsWith(".MP3")){
+                    var fileUpload = fs.createWriteStream("./soundsMP3/" + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3");
                     var request = Https.get(file.url, function(response) {
                         response.pipe(fileUpload);
                     });
 
                     // Add the name of the attachment to the list of playable sound
-                    this.fredFilesMp3.push(new Sound('./soundsMP3/' + file.filename.toUpperCase().substring(0, file.filename.length - 4) + ".mp3", file.filename.toUpperCase().substring(0, file.filename.length - 4)));
-                    this.fredFilesName.push(file.filename.toUpperCase().substring(0, file.filename.length - 4));
+                    this.fredFilesMp3.push(new Sound('./soundsMP3/' + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3", file.name.toUpperCase().substring(0, file.name.length - 4)));
+                    this.fredFilesName.push(file.name.toUpperCase().substring(0, file.name.length - 4));
                 }
             });
         }
@@ -172,7 +172,7 @@ export class SoundManager {
     // UTILITY ///////////////////////////
 
     isInChannel = (message:Discord.Message) => {
-        if(message.member.voiceChannel){
+        if(message.member.voice.channel){
             return true;
         } else {
             return false;

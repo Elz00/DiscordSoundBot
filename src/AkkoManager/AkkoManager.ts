@@ -30,7 +30,7 @@ class AkkoManager {
     }
 
     sendPicture = (message:Discord.Message, picture:Picture) => {
-        message.channel.send("", {file: picture.path}).catch(err => {
+        message.channel.send({files: [picture.path]}).catch(err => {
             console.log(err);
         })
     }

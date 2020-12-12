@@ -51,6 +51,4 @@ function checkIfForbidden(message:Discord.Message):boolean{
 }
 
 // Log our bot in
-
-//client.login("NDQ3ODM5NjkwOTcyNzI1MjY4.XOGUCQ.uZm9XLSYA4I-kKeL9WRkT5d_rQo"); // Debug
-client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XhS7nA.KPQZ4br0UQGBoSr5qAk9OXYCdto");
+client.login(process.env.TOKEN);

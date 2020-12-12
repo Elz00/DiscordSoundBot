@@ -24,9 +24,9 @@ class Quote {
 
     
 
-    printQuote = (channel:Discord.TextChannel | Discord.GroupDMChannel | Discord.DMChannel) => channel.send(this.getQuoteAsString())
+    printQuote = (channel:Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel) => channel.send(this.getQuoteAsString())
     
-    printQuoteWithDate = (channel:Discord.TextChannel | Discord.GroupDMChannel | Discord.DMChannel) => channel.send(this.getQuoteWithDateAsString())
+    printQuoteWithDate = (channel:Discord.TextChannel | Discord.DMChannel | Discord.NewsChannel) => channel.send(this.getQuoteWithDateAsString())
 
     getQuoteAsString = ():string => putFirstLetterToUpperCase(this.name.toLowerCase()) + ": " + this.quote;
 
