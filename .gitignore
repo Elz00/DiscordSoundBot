@@ -1,5 +1,6 @@
 .env
-/soundsMP3
+src/soundsMP3
 /node_modules
 *.js
 *.js.map
+/src/AkkoPictures

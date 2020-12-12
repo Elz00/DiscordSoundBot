@@ -1,5 +1,5 @@
 
-import Discord = require("discord.js");
+import Discord from "discord.js"
 import { putFirstLetterToUpperCase } from "../Utils/Format"
 
 class Quote {
@@ -21,6 +21,8 @@ class Quote {
         console.log(date.toISOString())
         console.log(date.toTimeString())*/
     }
+
+    
 
     printQuote = (channel:Discord.TextChannel | Discord.GroupDMChannel | Discord.DMChannel) => channel.send(this.getQuoteAsString())
     

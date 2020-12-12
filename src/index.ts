@@ -6,6 +6,7 @@ import Discord = require("discord.js");
 // Import the SoundManager
 import { SoundManager } from './SoundPlayer/SoundManager';
 import QuoteManager from "./QuoteManager/QuoteManager";
+import AkkoManager from "./AkkoManager/AkkoManager";
 
 require('dotenv').config();
 
@@ -29,10 +30,12 @@ var dontleave = false;
 
 var soundManager:SoundManager = new SoundManager(users);
 var quoteManager:QuoteManager = new QuoteManager();
+var akkoManager:AkkoManager = new AkkoManager();
 
 client.on('message', message => {
     soundManager.checkForSoundRelatedMessage(message);
     quoteManager.checkForQuoteRelatedMessage(message);
+    akkoManager.checkForAkkoRelatedMessage(message);
 });
 
 
@@ -48,5 +51,6 @@ function checkIfForbidden(message:Discord.Message):boolean{
 }
 
 // Log our bot in
-//client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XOBiBw.s0EOMqQF63dHpr-ZQCukn0QzeBw");
-client.login("NDQ3ODM5NjkwOTcyNzI1MjY4.XOCQzQ.MzDTpCRbjTn8BhnlNvvQ4-Uf61Y");
+
+//client.login("NDQ3ODM5NjkwOTcyNzI1MjY4.XOGUCQ.uZm9XLSYA4I-kKeL9WRkT5d_rQo"); // Debug
+client.login("NDUyMjcyMTU0ODE0NDQ3NjE4.XhS7nA.KPQZ4br0UQGBoSr5qAk9OXYCdto");

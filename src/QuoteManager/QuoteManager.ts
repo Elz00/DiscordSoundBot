@@ -163,7 +163,7 @@ class QuoteManager {
     // DATABASE UTILS ////////////////////
 
     readAllQuotesFromTextFile = async ():Promise<void> => {
-        await fs.readFile("./DataBase/quotes.txt", "utf8", (errors:any, data:string) => {
+        await fs.readFile("./src/DataBase/quotes.txt", "utf8", (errors:any, data:string) => {
             data.split("\n").forEach((qAsString:string) => {
                 let qData:string[] = qAsString.split(";");
                 this.quotes.push(new Quote(qData[0], qData[1], qData[2], new Date(qData[3])))

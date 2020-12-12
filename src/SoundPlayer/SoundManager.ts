@@ -19,9 +19,9 @@ export class SoundManager {
 
     constructor(users:any[][]){
         this.users = users;
-        fs.readdir('./soundsMP3/', (err, files) => {
-            files.forEach(file => {
-                this.fredFilesMp3.push(new Sound('./soundsMP3/' + file.toUpperCase().substring(0, file.length - 4) + ".mp3", file.toUpperCase().substring(0, file.length - 4)));
+        fs.readdir('./src/soundsMP3/', (err: any, files: any) => {
+            files.forEach((file:any) => {
+                this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + file.toUpperCase().substring(0, file.length - 4) + ".mp3", file.toUpperCase().substring(0, file.length - 4)));
                 this.fredFilesName.push(file.toUpperCase().substring(0, file.length - 4));
             });
         })
@@ -52,20 +52,19 @@ export class SoundManager {
             case "REDUCE AUTISM": {
                 this.deleteSound(message);
                 break;}
-            case "!HELP": {
+            case "AIDEZ MOI": {
                 this.helpCommand(message);
                 break;}
         }
     }
 
     playSounds = (message:Discord.Message) => {
-
         if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
-            let channel = message.member.voiceChannel;
-    
+            let channel:Discord.VoiceChannel = message.member.voiceChannel;
             if(channel != null && this.channelPlaying.indexOf(channel.id) == -1){
-                channel.join().then((connection) => {
-            
+                console.log("channel found: " + channel.name)
+                channel.join().then(connection => {
+                    console.log("is in channel")
                     this.channelPlaying.push(channel.id);
 
                     let sound:Sound = null;
@@ -75,7 +74,7 @@ export class SoundManager {
                             sound = soundTemp;
                         }
                     });
-            
+                    
                     let dispatcher:Discord.StreamDispatcher = connection.playFile(sound.path.toString());
         
                     dispatcher.on("end", end => {
@@ -85,7 +84,9 @@ export class SoundManager {
                         this.dontleave = false;
                         this.channelPlaying.splice(this.channelPlaying.indexOf(channel.id), 1);
                     });
-                });
+
+                    
+                }).catch(console.error);
             }
 
             
@@ -148,12 +149,23 @@ export class SoundManager {
     // HELP COMMANDS /////////////////////
 
     helpCommand = (message:Discord.Message) => {
-        var commands:string = "";
+        var commands1:string = "";
+        var commands2:string = "";
         var names = this.fredFilesName.sort((one, two) => (one > two ? 1 : -1));
+
+        let halfIndex:number = names.length / 2;
+        let lastNames = names.slice(halfIndex, names.length);
+        names = names.slice(0, halfIndex);
+
         names.forEach(file => {
-            commands += "- " + file + "\n"
+            commands1 += "- " + file + "\n"
+        });
+        lastNames.forEach(file => {
+            commands2 += "- " + file + "\n"
         })
-        message.channel.send("```Here is a list of all the sounds I can make:\n" + commands + "```");
+        message.channel.send("```Here is a list of all the sounds I can make:\n" + commands1 + "```");
+        message.channel.send("```\n" + commands2 + "```");
+    
     }
 
     //////////////////////////////////////

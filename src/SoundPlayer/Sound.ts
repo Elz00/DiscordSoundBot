@@ -9,8 +9,4 @@ export class Sound {
         this.path = path;
         this.name = name;
     }
-
-
-
-
 }
