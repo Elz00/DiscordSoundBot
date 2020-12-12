@@ -109,13 +109,13 @@ export class SoundManager {
             //foreach attachment, fetch data from discord and store it
             message.attachments.forEach((file:Discord.MessageAttachment) => {
                 if(file.name.endsWith(".mp3") || file.name.endsWith(".MP3")){
-                    var fileUpload = fs.createWriteStream("./soundsMP3/" + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3");
+                    var fileUpload = fs.createWriteStream("./src/soundsMP3/" + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3");
                     var request = Https.get(file.url, function(response) {
                         response.pipe(fileUpload);
                     });
 
                     // Add the name of the attachment to the list of playable sound
-                    this.fredFilesMp3.push(new Sound('./soundsMP3/' + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3", file.name.toUpperCase().substring(0, file.name.length - 4)));
+                    this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3", file.name.toUpperCase().substring(0, file.name.length - 4)));
                     this.fredFilesName.push(file.name.toUpperCase().substring(0, file.name.length - 4));
                 }
             });
