@@ -2,7 +2,7 @@
 import * as Discord from "discord.js"
 import Https = require("https");
 
-import { Sound } from './Sound';
+import { Sound } from '../Models/Sound';
 
 const fs = require('fs');
 
@@ -21,10 +21,10 @@ export class SoundManager {
     commandChannels:String[] = ["452338796776652811"];
 
     constructor(){
-        fs.readdir('./src/soundsMP3/', (err: any, files: any) => {
+        fs.readdir('./src/Database/soundsMP3/', (err: any, files: any) => {
             files.forEach((file:any) => {
                 const name = file.toUpperCase().substring(0, file.length - 4)
-                this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + name + ".mp3", name));
+                this.fredFilesMp3.push(new Sound('./src/Database/soundsMP3/' + name + ".mp3", name));
                 this.fredFilesName.push(name);
             });
         })
@@ -141,13 +141,13 @@ export class SoundManager {
             //foreach attachment, fetch data from discord and store it
             message.attachments.forEach((file:Discord.MessageAttachment) => {
                 if(file.name.endsWith(".mp3") || file.name.endsWith(".MP3")){
-                    var fileUpload = fs.createWriteStream("./src/soundsMP3/" + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3");
+                    var fileUpload = fs.createWriteStream("./src/Database/soundsMP3/" + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3");
                     var request = Https.get(file.url, function(response) {
                         response.pipe(fileUpload);
                     });
 
                     // Add the name of the attachment to the list of playable sound
-                    this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3", file.name.toUpperCase().substring(0, file.name.length - 4)));
+                    this.fredFilesMp3.push(new Sound('./src/Database/soundsMP3/' + file.name.toUpperCase().substring(0, file.name.length - 4) + ".mp3", file.name.toUpperCase().substring(0, file.name.length - 4)));
                     this.fredFilesName.push(file.name.toUpperCase().substring(0, file.name.length - 4));
                 }
             });

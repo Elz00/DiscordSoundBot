@@ -47,11 +47,11 @@ class AkkoManager {
 
     initializeFileName = async () => {   
         this.akkoFiles = [];
-        await fs.readdir('./src/AkkoPictures/', (err, files) => {
+        await fs.readdir('./src/Database/AkkoPictures/', (err, files) => {
             files.forEach(file => {
                 this.akkoFiles.push(
                     {
-                        path: "./src/AkkoPictures/" + file,
+                        path: "./src/Database/AkkoPictures/" + file,
                         name: file.toUpperCase().substring(0, file.length - 4),
                     }
                 );
