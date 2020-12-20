@@ -4,9 +4,8 @@ import Discord = require("discord.js");
 
 
 // Import the SoundManager
-import { SoundManager } from './SoundPlayer/SoundManager';
-import QuoteManager from "./QuoteManager/QuoteManager";
-import AkkoManager from "./AkkoManager/AkkoManager";
+import { SoundManager } from './Managers/SoundManager';
+import AkkoManager from "./Managers/AkkoManager";
 
 require('dotenv').config();
 
@@ -18,12 +17,10 @@ client.on('ready', () => {
 });
 
 var soundManager:SoundManager = new SoundManager();
-var quoteManager:QuoteManager = new QuoteManager();
 var akkoManager:AkkoManager = new AkkoManager();
 
 client.on('message', message => {
     soundManager.checkForSoundRelatedMessage(message);
-    quoteManager.checkForQuoteRelatedMessage(message);
     akkoManager.checkForAkkoRelatedMessage(message);
 });
 
