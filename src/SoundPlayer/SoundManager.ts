@@ -6,23 +6,26 @@ import { Sound } from './Sound';
 
 const fs = require('fs');
 
+interface Playlist {
+    sounds: Sound[];
+    voiceConnection: Discord.VoiceConnection;
+}
+
 export class SoundManager {
 
     fredFilesMp3:Sound[] = [];
     fredFilesName:String[] = [];
 
-    channelPlaying:String[] = [];
+    playlists:Map<string, Playlist> = new Map();
 
-    dontleave:Boolean = false;
+    commandChannels:String[] = ["452338796776652811"];
 
-    users:any[][];
-
-    constructor(users:any[][]){
-        this.users = users;
+    constructor(){
         fs.readdir('./src/soundsMP3/', (err: any, files: any) => {
             files.forEach((file:any) => {
-                this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + file.toUpperCase().substring(0, file.length - 4) + ".mp3", file.toUpperCase().substring(0, file.length - 4)));
-                this.fredFilesName.push(file.toUpperCase().substring(0, file.length - 4));
+                const name = file.toUpperCase().substring(0, file.length - 4)
+                this.fredFilesMp3.push(new Sound('./src/soundsMP3/' + name + ".mp3", name));
+                this.fredFilesName.push(name);
             });
         })
     }
@@ -32,7 +35,7 @@ export class SoundManager {
 
     checkForSoundRelatedMessage = (message:Discord.Message) => {
         if(this.fredFilesName.indexOf(message.content.toUpperCase()) !== -1){
-            this.playSounds(message);
+            this.addSoundToQueue(message);
         }
 
         if(message.content.toUpperCase().indexOf("REDUCE AUTISM") === 0){
@@ -40,62 +43,91 @@ export class SoundManager {
         }
 
         switch (message.content.toUpperCase()) {
-            case "ENHANCE AUTISM": {
+            case "ENHANCE AUTISM": 
                 this.addSound(message);
-                break;}
-            case "SHUT THE FUCK UP": {
-                this.stopPlayingSound(message);
-                break;}
-            case "STFU": {
-                this.stopPlayingSound(message);
-                break;}
-            case "REDUCE AUTISM": {
+                break;
+            case "SHUT THE FUCK UP": 
+                this.stopPlaylist(message);
+                break;
+            case "STFU": 
+                this.stopPlaylist(message);
+                break;
+            case "REDUCE AUTISM": 
                 this.deleteSound(message);
-                break;}
-            case "AIDEZ MOI": {
+                break;
+            case "AIDEZ MOI": 
                 this.helpCommand(message);
-                break;}
+                break;
+            case "ADD THIS CHANNEL":
+                this.commandChannels.push(message.channel.id);
+                break;
         }
     }
 
-    playSounds = (message:Discord.Message) => {
-        if(this.isInChannel(message) && message.channel.id == "452338796776652811"){
-            let channel:Discord.VoiceChannel = message.member.voice.channel;
-            if(channel != null && this.channelPlaying.indexOf(channel.id) == -1){
-                console.log("channel found: " + channel.name)
-                channel.join().then((connection:Discord.VoiceConnection) => {
-                    console.log("is in channel")
-                    this.channelPlaying.push(channel.id);
+    addSoundToQueue = (message:Discord.Message) => {
+        if(this.isCommandValid(message)){
+            let voiceChannel:Discord.VoiceChannel = message.member.voice.channel;
+            if(voiceChannel != null){
 
-                    let sound:Sound = null;
-    
-                    this.fredFilesMp3.forEach(soundTemp => {
-                        if(soundTemp.name === message.content.toUpperCase()){
-                            sound = soundTemp;
-                        }
-                    });
-                    
-                    let dispatcher:Discord.StreamDispatcher = connection.play(sound.path.toString());
-        
-                    dispatcher.on("finish", () => {
-                        setTimeout(() => {
-                            channel.leave();
-                        }, 1000);
-                        this.dontleave = false;
-                        this.channelPlaying.splice(this.channelPlaying.indexOf(channel.id), 1);
-                    });
+                const sound:Sound = this.fredFilesMp3.find((sound:Sound) => sound.name === message.content.toUpperCase());
 
-                    
-                }).catch(console.error);
+                // Create the playlist for this channel if it doesnt exist
+                if(this.playlists.has(voiceChannel.id)){
+                    this.playlists.get(voiceChannel.id).sounds.push(sound);
+                } else {
+                    this.playlists.set(voiceChannel.id, {sounds: [sound], voiceConnection: null} )
+                }
+
+                // If this is false, this means the bot is already playing the playlist
+                // So we don't need to start it
+                if(this.playlists.get(voiceChannel.id).sounds.length == 1){
+                    this.playPlaylist(voiceChannel);
+                }
             }
-
-            
         }
     }
 
-    stopPlayingSound = (message:Discord.Message) => {
-        if(message.member.voice.channel != null && this.channelPlaying.indexOf(message.member.voice.channel.id) != -1){
-            message.member.voice.channel.leave();
+    playPlaylist = (channel:Discord.VoiceChannel) => {
+
+        const soundList:Sound[] = this.playlists.get(channel.id).sounds;
+        const sound:Sound = soundList[0]
+
+        if(sound === undefined) return;
+
+        // We create a new voiceConnection if the bot isn't in the channel
+        if(this.playlists.get(channel.id).voiceConnection === null){
+            channel.join().then((connection:Discord.VoiceConnection) => {
+                this.playlists.get(channel.id).voiceConnection = connection;
+            }).catch(console.error);
+        }
+
+        channel.join().then((connection:Discord.VoiceConnection) => {
+            
+            let dispatcher:Discord.StreamDispatcher = connection.play(sound.path.toString());
+
+            dispatcher.on("finish", () => {
+                setTimeout(() => {
+                    soundList.shift()
+                    if(soundList.length > 0){
+                        this.playPlaylist(channel);
+                    } else {
+                        this.playlists.get(channel.id).voiceConnection.disconnect()
+                        this.playlists.get(channel.id).voiceConnection = null;
+                    }
+                }, 1000);
+            });
+
+        }).catch(console.error);
+    }
+
+    stopPlaylist = (message:Discord.Message) => {
+        const voiceChannel = message.member.voice.channel;
+        if(voiceChannel != null){
+            const playlist:Playlist = this.playlists.get(voiceChannel.id)
+            if(playlist){
+                playlist.sounds = [];
+                playlist.voiceConnection.dispatcher.end()
+            }
         }
     }
 
@@ -125,7 +157,6 @@ export class SoundManager {
     deleteSound = (message:Discord.Message) => {
         var toDelete:String[] = message.content.split(" ");
         toDelete.splice(0, 2);
-        var path = "";
         toDelete.forEach((element) => {
 
             let sound:Sound = null;
@@ -149,33 +180,32 @@ export class SoundManager {
     // HELP COMMANDS /////////////////////
 
     helpCommand = (message:Discord.Message) => {
-        var commands1:string = "";
-        var commands2:string = "";
-        var names = this.fredFilesName.sort((one, two) => (one > two ? 1 : -1));
 
-        let halfIndex:number = names.length / 2;
-        let lastNames = names.slice(halfIndex, names.length);
-        names = names.slice(0, halfIndex);
+        const nameList:String[] = [];
+        let i = 0;
+        let letterCount = 0
 
-        names.forEach(file => {
-            commands1 += "- " + file + "\n"
-        });
-        lastNames.forEach(file => {
-            commands2 += "- " + file + "\n"
-        })
-        message.channel.send("```Here is a list of all the sounds I can make:\n" + commands1 + "```");
-        message.channel.send("```\n" + commands2 + "```");
-    
+        for(const name of this.fredFilesName){
+            // 3 is for "\n- "
+            letterCount += name.length + 3;
+
+            if(letterCount > 1900){
+                i++;
+                letterCount = name.length;
+            }
+
+            nameList[i] += "\n- " + name
+            
+        }
+
+        message.channel.send("Here is a list of all the sounds I can make");
+        for(const names of nameList){
+            message.channel.send("```" + names + "```");
+        }
     }
 
     //////////////////////////////////////
     // UTILITY ///////////////////////////
 
-    isInChannel = (message:Discord.Message) => {
-        if(message.member.voice.channel){
-            return true;
-        } else {
-            return false;
-        }
-    }
+    isCommandValid = (message:Discord.Message) => message.member.voice.channel.joinable && this.commandChannels.indexOf(message.channel.id) !== -1
 }
