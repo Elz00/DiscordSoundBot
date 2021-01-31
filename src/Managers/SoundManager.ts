@@ -3,6 +3,7 @@ import * as Discord from "discord.js"
 import Https = require("https");
 
 import { Sound } from '../Models/Sound';
+import ControlManager from "./ControlManager";
 
 const fs = require('fs');
 
@@ -15,12 +16,14 @@ export class SoundManager {
 
     fredFilesMp3:Sound[] = [];
     fredFilesName:String[] = [];
+    controlManager: ControlManager = null;
 
     playlists:Map<string, Playlist> = new Map();
 
     commandChannels:String[] = ["452338796776652811"];
 
-    constructor(){
+    constructor(controlManager: ControlManager){
+        this.controlManager = controlManager;
         fs.readdir('./src/Database/soundsMP3/', (err: any, files: any) => {
             files.forEach((file:any) => {
                 const name = file.toUpperCase().substring(0, file.length - 4)
@@ -207,5 +210,7 @@ export class SoundManager {
     //////////////////////////////////////
     // UTILITY ///////////////////////////
 
-    isCommandValid = (message:Discord.Message) => message.member.voice.channel.joinable && this.commandChannels.indexOf(message.channel.id) !== -1
+    isCommandValid = (message:Discord.Message) => message.member.voice.channel.joinable
+        && this.commandChannels.indexOf(message.channel.id) !== -1
+        && this.controlManager.isUserRestricted(message.member.id);
 }

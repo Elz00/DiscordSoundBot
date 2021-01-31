@@ -6,6 +6,7 @@ import Discord = require("discord.js");
 // Import the SoundManager
 import { SoundManager } from './Managers/SoundManager';
 import AkkoManager from "./Managers/AkkoManager";
+import ControlManager from "./Managers/ControlManager";
 
 require('dotenv').config();
 
@@ -16,12 +17,14 @@ client.on('ready', () => {
   console.log('Bot started.');
 });
 
-var soundManager:SoundManager = new SoundManager();
-var akkoManager:AkkoManager = new AkkoManager();
+const controlManager: ControlManager = new ControlManager();
+const soundManager:SoundManager = new SoundManager(controlManager);
+const akkoManager:AkkoManager = new AkkoManager();
 
 client.on('message', message => {
     soundManager.checkForSoundRelatedMessage(message);
     akkoManager.checkForAkkoRelatedMessage(message);
+    controlManager.checkForControlRelatedMessage(message);
 });
 
 // Log our bot in
